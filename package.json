@@ -1,0 +1,22 @@
+{
+    "name": "pixel-resume",
+    "version": "1.0.0",
+    "description": "My new resume on Web with pixel style --> Have fun :')",
+    "main": "index.js",
+    "scripts": {
+        "test": ""
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/armpscale/pixel-resume.git"
+    },
+    "author": "Akkrawut Khanthawan",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/armpscale/pixel-resume/issues"
+    },
+    "homepage": "https://github.com/armpscale/pixel-resume#readme",
+    "dependencies": {
+        "createjs": "^1.0.1"
+    }
+}
