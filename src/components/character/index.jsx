@@ -54,7 +54,7 @@ class Character extends React.Component {
                     steps={3}
                     fps={10}
                     // timeout={1000}
-                    autoplay={true}
+                    autoplay={false}
                     loop={true}
                     isResponsive={true}
                     background={`https://raw.githubusercontent.com/danilosetra/react-responsive-spritesheet/master/assets/images/examples/sprite-image-background.png`}
