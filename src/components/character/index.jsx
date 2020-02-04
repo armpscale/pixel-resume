@@ -6,79 +6,151 @@ import image from '../../spritesheet/character/ForteSpriteSheet.png'
 class Character extends React.Component {
     constructor() {
         super();
-        this.escFunction = this.escFunction.bind(this);
+        this.state = {
+            step: 1,
+            className: "forte-right-style",
+            keysPressed: {},
+            keysChanged: false,
+        }
+
+        // bind function
+        this.onKeyDownFunction = this.onKeyDownFunction.bind(this);
+        this.onKeyUpFunction = this.onKeyUpFunction.bind(this);
+        this.timer = this.timer.bind(this);
     }
     componentDidMount() {
-        document.addEventListener("keydown", this.escFunction, false);
+        var intervalId = setInterval(this.timer, 4000);
+        // store intervalId in the state so it can be accessed later:
+        this.setState({ intervalId: intervalId });
+
+        document.addEventListener('keydown', this.onKeyDownFunction);
+        document.addEventListener('keyup', this.onKeyUpFunction);
     }
     componentWillUnmount() {
-        document.removeEventListener("keydown", this.escFunction, false);
+        clearInterval(this.interval);
+        document.addEventListener('keydown', this.onKeyDownFunction, false);
+        document.addEventListener('keyup', this.onKeyUpFunction, false);
     }
 
-    escFunction(event) {
-        console.log(event.keyCode)
-        if (event.keyCode === 27) {
-            this.spritesheeInstance.play();
+    onKeyDownFunction(event) {
+        this.state.keysPressed[event.key] = true;
+
+        switch (event.key) {
+            case 'ArrowRight':
+                // ArrowRight Button
+                this.setState({
+                    step: 3,
+                    className: "forte-right-style",
+                });
+                if (!this.state.keysChanged) {
+                    this.spritesheetInstance.goToAndPlay(4);
+                    this.spritesheetInstance.setStartAt(4);
+                    this.spritesheetInstance.setEndAt(6);
+                    this.state.keysChanged = true;
+                }
+                break;
+            case 'ArrowLeft':
+                // ArrowLeft Button
+                this.setState({
+                    step: 3,
+                    className: "forte-left-style",
+                });
+                if (!this.state.keysChanged) {
+                    this.spritesheetInstance.goToAndPlay(4);
+                    this.spritesheetInstance.setStartAt(4);
+                    this.spritesheetInstance.setEndAt(6);
+                    this.state.keysChanged = true;
+                }
+                break;
+            default:
+            // code block
+        }
+    }
+
+    timer() {
+        // setState method is used to update the state
+        if (!this.state.keysChanged) {
+            this.spritesheetInstance.setStartAt(1);
+            this.spritesheetInstance.setEndAt(3);
+            this.spritesheetInstance.goToAndPlay(1);
+        }
+    }
+
+    onKeyUpFunction(event) {
+        delete this.state.keysPressed[event.key];
+        delete this.state.keysChanged;
+        delete this.state.step;
+
+        this.state.keysPressed[event.key] = true;
+
+        switch (event.key) {
+            case 'ArrowRight':
+                // ArrowRight Button
+                this.spritesheetInstance.pause();
+                break;
+            case 'ArrowLeft':
+                // ArrowLeft Button
+                this.spritesheetInstance.pause();
+                break;
+            default:
+            // code block
         }
     }
 
     myFunctionPlay() {
-        this.spritesheeInstance.play();
+        this.spritesheetInstance.play();
     }
 
     myFunctionPause() {
-        this.spritesheeInstance.pause();
+        this.spritesheetInstance.pause();
     }
 
     myFunctionGetFrame() {
-        alert(this.spritesheeInstance.getInfo('frame'));
+        alert(this.spritesheetInstance.getInfo('frame'));
     }
 
     myFunctionToggleDirection() {
-        if (this.spritesheeInstance.getInfo('direction') === 'forward') {
-            this.spritesheeInstance.setDirection('rewind');
-        } else if (this.spritesheeInstance.getInfo('direction') === 'rewind') {
-            this.spritesheeInstance.setDirection('forward');
+        if (this.spritesheetInstance.getInfo('direction') === 'forward') {
+            this.spritesheetInstance.setDirection('rewind');
+        } else if (this.spritesheetInstance.getInfo('direction') === 'rewind') {
+            this.spritesheetInstance.setDirection('forward');
         }
     }
 
     render() {
         return (
-            <div onKeyDown={this._handleKeyDown}>
+            <div>
                 <Spritesheet
-                    className={`my-element__class--style`}
-                    // image={`https://raw.githubusercontent.com/danilosetra/react-responsive-spritesheet/master/assets/images/examples/sprite-image-horizontal.png`}
+                    className={this.state.className}
                     image={image}
+                    style={{ width: '12%', marginTop: '25%'}}
                     widthFrame={70}
-                    heightFrame={140}
-                    steps={3}
+                    heightFrame={70}
+                    steps={this.state.step}
                     fps={10}
                     // timeout={1000}
                     autoplay={false}
                     loop={true}
                     isResponsive={true}
-                    background={`https://raw.githubusercontent.com/danilosetra/react-responsive-spritesheet/master/assets/images/examples/sprite-image-background.png`}
-                    backgroundSize={`cover`}
-                    backgroundRepeat={`no-repeat`}
-                    backgroundPosition={`center center`}
-                    getInstance={spritesheet => {
-                        this.spritesheeInstance = spritesheet;
+                    // backgroundSize={`cover`}
+                    // backgroundRepeat={`no-repeat`}
+                    // backgroundPosition={`center center`}
+                    onPause={spritesheet => {
+                        spritesheet.setStartAt(1);
+                        spritesheet.setEndAt(3);
+                        spritesheet.goToAndPlay(1);
+                        console.log(spritesheet.getInfo('frame'))
                     }}
-                    onEachFrame={spritesheet => {
-                        if (spritesheet.getInfo('frame') == 1){
-                            spritesheet.pause()
-                            setTimeout(() => {
-                                spritesheet.play()
-                              }, 3000);
-                        }
-                      }}
+                    getInstance={spritesheet => {
+                        this.spritesheetInstance = spritesheet;
+                    }}
                 />
-                <div>
+                {/* <div>
                     <button onClick={this.myFunctionPlay.bind(this)}>play</button>
                     <button onClick={this.myFunctionPause.bind(this)}>pause</button>
                     <button onClick={this.myFunctionGetFrame.bind(this)}>alert current frame</button>
                     <button onClick={this.myFunctionToggleDirection.bind(this)}>toggle direction</button>
-                </div>
+                </div> */}
             </div>
         );
     }
