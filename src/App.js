@@ -1,21 +1,27 @@
 import React from 'react';
+import {
+    ParallaxProvider
+} from 'react-scroll-parallax';
 import './App.css';
-import Character from './components/character';
+import Resume from './components/resume';
+
 
 class App extends React.Component {
 
-  constructor(props) {
-    super(props);
+    constructor(props) {
+        super(props);
 
-  }
+    }
 
-  render() {
-    return (
-      <div className="App">
-        <Character />
-      </div>
-    );
-  }
+    render() {
+        return (
+            <ParallaxProvider>
+                <div className = "App" >
+                    <Resume />
+                </div>
+            </ParallaxProvider>
+        );
+    }
 }
 
 export default App;

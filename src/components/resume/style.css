@@ -1,0 +1,21 @@
+.character-right-style {
+    -webkit-transform: scaleX(1);
+    transform: scaleX(1);
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 25%;
+    margin-bottom: 25%;
+    width: 12%;
+}
+
+.character-left-style {
+    -webkit-transform: scaleX(1);
+    transform: scaleX(-1);
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 25%;
+    margin-bottom: 25%;
+    width: 12%;
+}
