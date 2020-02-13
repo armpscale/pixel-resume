@@ -1,5 +1,6 @@
 import React from 'react';
 import Spritesheet from 'react-responsive-spritesheet';
+import { Parallax, ParallaxBanner } from 'react-scroll-parallax';
 import './style.css';
 import image from '../../spritesheet/character/ForteSpriteSheet.png'
 
@@ -8,12 +9,16 @@ class Character extends React.Component {
         super();
         this.state = {
             step: 1,
-            className: "forte-right-style",
+            className: "character-right-style",
             keysPressed: {},
             keysChanged: false,
+            rightX: 0,
+            mousePressed: false,
+            isDown: false,
         }
 
         // bind function
+        this.toggleClass  = this.toggleClass.bind(this);
         this.onKeyDownFunction = this.onKeyDownFunction.bind(this);
         this.onKeyUpFunction = this.onKeyUpFunction.bind(this);
         this.timer = this.timer.bind(this);
@@ -22,25 +27,80 @@ class Character extends React.Component {
         var intervalId = setInterval(this.timer, 4000);
         // store intervalId in the state so it can be accessed later:
         this.setState({ intervalId: intervalId });
-
+        window.addEventListener("mousedown", this.toggleClass );
+        window.addEventListener("mouseup", this.toggleClass );
         document.addEventListener('keydown', this.onKeyDownFunction);
         document.addEventListener('keyup', this.onKeyUpFunction);
     }
     componentWillUnmount() {
         clearInterval(this.interval);
-        document.addEventListener('keydown', this.onKeyDownFunction, false);
-        document.addEventListener('keyup', this.onKeyUpFunction, false);
+        window.removeEventListener("mousedown", this.toggleClass );
+        window.removeEventListener("mouseup", this.toggleClass );
+        document.removeEventListener('keydown', this.onKeyDownFunction);
+        document.removeEventListener('keyup', this.onKeyUpFunction);
+    }
+
+    toggleClass(event) {
+        this.buttonPressTimer = setTimeout(() => {
+            console.log(event)
+
+        }, 0);
+        this.setState(prevState => ({ isDown: !prevState.isDown }));
+        console.log(this.state.isDown)
+        
+      }
+
+    // onMouseFunction(e) {
+    //     while (!this.state.mousePressed){
+    //         if(e.type === 'mouseup') {
+    //             this.state.mousePressed = true
+    //         }
+    //         document.body.style.backgroundPositionX = `${this.state.rightX}px`;
+    //         if (window.innerWidth / 2 <= e.clientX) {
+    //             var xPosition = e.clientX;
+    //             console.log(xPosition, window.innerWidth)
+    //             this.setState({
+    //                 step: 3,
+    //                 className: "character-right-style",
+    //                 rightX: this.state.rightX - 10,
+    //             });
+
+    //         } else {
+    //             var xPosition = e.clientX;
+    //             console.log(xPosition, window.innerWidth)
+    //             this.setState({
+    //                 step: 3,
+    //                 className: "character-left-style",
+    //                 rightX: this.state.rightX + 10,
+    //             });
+    //         }
+    //     }
+    // }
+
+    handleButtonPress (event) {
+        this.buttonPressTimer = setTimeout(() => {
+            console.log(event)
+
+        }, 0);
+        console.log(event)
+    }
+
+    handleButtonRelease (event) {
+        console.log(event)
+        clearTimeout(event);
     }
 
     onKeyDownFunction(event) {
+        document.body.style.backgroundPositionX = `${this.state.rightX}px`;
         this.state.keysPressed[event.key] = true;
-
+        console.log(this.state.rightX)
         switch (event.key) {
             case 'ArrowRight':
                 // ArrowRight Button
                 this.setState({
                     step: 3,
-                    className: "forte-right-style",
+                    className: "character-right-style",
+                    rightX: this.state.rightX - 10,
                 });
                 if (!this.state.keysChanged) {
                     this.spritesheetInstance.goToAndPlay(4);
@@ -53,7 +113,8 @@ class Character extends React.Component {
                 // ArrowLeft Button
                 this.setState({
                     step: 3,
-                    className: "forte-left-style",
+                    className: "character-left-style",
+                    rightX: this.state.rightX + 10,
                 });
                 if (!this.state.keysChanged) {
                     this.spritesheetInstance.goToAndPlay(4);
@@ -81,8 +142,6 @@ class Character extends React.Component {
         delete this.state.keysChanged;
         delete this.state.step;
 
-        this.state.keysPressed[event.key] = true;
-
         switch (event.key) {
             case 'ArrowRight':
                 // ArrowRight Button
@@ -97,33 +156,13 @@ class Character extends React.Component {
         }
     }
 
-    myFunctionPlay() {
-        this.spritesheetInstance.play();
-    }
-
-    myFunctionPause() {
-        this.spritesheetInstance.pause();
-    }
-
-    myFunctionGetFrame() {
-        alert(this.spritesheetInstance.getInfo('frame'));
-    }
-
-    myFunctionToggleDirection() {
-        if (this.spritesheetInstance.getInfo('direction') === 'forward') {
-            this.spritesheetInstance.setDirection('rewind');
-        } else if (this.spritesheetInstance.getInfo('direction') === 'rewind') {
-            this.spritesheetInstance.setDirection('forward');
-        }
-    }
-
     render() {
         return (
-            <div>
+            <div >
                 <Spritesheet
                     className={this.state.className}
                     image={image}
-                    style={{ width: '12%', marginTop: '25%'}}
+                    // style={{ width: '12%', marginTop: '25%'}}
                     widthFrame={70}
                     heightFrame={70}
                     steps={this.state.step}
@@ -132,6 +171,7 @@ class Character extends React.Component {
                     autoplay={false}
                     loop={true}
                     isResponsive={true}
+                    // background={BgImage}
                     // backgroundSize={`cover`}
                     // backgroundRepeat={`no-repeat`}
                     // backgroundPosition={`center center`}
@@ -139,18 +179,11 @@ class Character extends React.Component {
                         spritesheet.setStartAt(1);
                         spritesheet.setEndAt(3);
                         spritesheet.goToAndPlay(1);
-                        console.log(spritesheet.getInfo('frame'))
                     }}
                     getInstance={spritesheet => {
                         this.spritesheetInstance = spritesheet;
                     }}
                 />
-                {/* <div>
-                    <button onClick={this.myFunctionPlay.bind(this)}>play</button>
-                    <button onClick={this.myFunctionPause.bind(this)}>pause</button>
-                    <button onClick={this.myFunctionGetFrame.bind(this)}>alert current frame</button>
-                    <button onClick={this.myFunctionToggleDirection.bind(this)}>toggle direction</button>
-                </div> */}
             </div>
         );
     }
